@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, redirect, request
 
 # Configure application
 app = Flask(__name__)
@@ -18,6 +18,9 @@ def chat():
     return render_template('chat.html')
 
 
-@app.route('/login')
+@app.route('/login', methods = ['GET', 'POST'])
 def login():
-    return render_template('login.html')
+    if request.method == 'POST':
+        return redirect('/')
+    else:
+        return render_template('login.html')
