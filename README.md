@@ -1,4 +1,4 @@
-Simply Messenger
+**Simply Messenger**
 
 Simple web-based messenger using Python's framework Flask
 
