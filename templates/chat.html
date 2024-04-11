@@ -1,0 +1,19 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Chat
+{% endblock %}
+
+{% block main %}
+    <div>
+        {% for message in messages %}
+            <p>{{ message }}</p>
+        {% endfor %}
+    </div>
+    <div>
+        <form action="/chat" method="post">
+            <input name="new_message" type="text" autofocus>
+            <input type="submit" value="Send">
+        </form>
+    </div>
+{% endblock %}
