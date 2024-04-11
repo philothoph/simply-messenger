@@ -1,0 +1,21 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Contacts
+{% endblock %}
+
+{% block main %}
+    <div>
+        <ul>
+            {% for contact in contacts %}
+                <li>{{ contact }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    <div>
+        <form action="/chat">
+            <input name="name" type="text" required>
+            <input type="submit" value="Add">
+        </form>
+    </div>
+{% endblock %}

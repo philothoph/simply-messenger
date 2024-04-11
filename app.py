@@ -13,7 +13,7 @@ def register():
     return render_template('register.html')
 
 
-@app.route('/chat')
+@app.route('/chat', methods = ['GET', 'POST'])
 def chat():
     return render_template('chat.html')
 
