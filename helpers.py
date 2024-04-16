@@ -17,3 +17,10 @@ def get_db():
     if not hasattr(g, 'sqlite_db'):
         g.sqlite_db = sqlite3.connect('simply.db')
     return g.sqlite_db
+
+
+# Close connection to database
+def close_connection(exception):
+    db = getattr(g, '_sqlite_db', None)
+    if db is not None:
+        db.close()
