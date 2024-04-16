@@ -1,3 +1,4 @@
+from config import DATABASE_FILENAME
 from flask import g, redirect, session
 from functools import wraps
 import sqlite3
@@ -15,7 +16,7 @@ def login_required(f):
 # Establish database connection
 def get_db():
     if not hasattr(g, 'sqlite_db'):
-        g.sqlite_db = sqlite3.connect('simply.db')
+        g.sqlite_db = sqlite3.connect(DATABASE_FILENAME, row_factory=sqlite3.Row)
     return g.sqlite_db
 
 
