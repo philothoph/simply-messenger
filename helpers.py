@@ -1,5 +1,6 @@
-from flask import redirect, session
+from flask import g, redirect, session
 from functools import wraps
+import sqlite3
 
 # Decorator to ensure user is logged in
 def login_required(f):
@@ -9,3 +10,10 @@ def login_required(f):
             return redirect('/login')
         return f(*args, **kwargs)
     return decorated_function
+
+
+# Establish database connection
+def get_db():
+    if not hasattr(g, 'sqlite_db'):
+        g.sqlite_db = sqlite3.connect('simply.db')
+    return g.sqlite_db
