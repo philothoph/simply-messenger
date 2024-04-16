@@ -15,9 +15,9 @@ def login_required(f):
 
 # Establish database connection
 def get_db():
-    if not hasattr(g, 'sqlite_db'):
-        g.sqlite_db = sqlite3.connect(DATABASE_FILENAME)
-    return g.sqlite_db
+    if not hasattr(g, '_sqlite_db'):
+        g._sqlite_db = sqlite3.connect(DATABASE_FILENAME)
+    return g._sqlite_db
 
 
 # Close connection to database
@@ -33,3 +33,13 @@ def insert_user(username, hash):
     cur = db.cursor()
     cur.execute('INSERT INTO users (username, hash) VALUES (?, ?)', (username, hash))
     db.commit()
+
+
+# Function to execute sql requests to get info froprint(session['user_id'])m db
+def execute(req, *vars, one=False):
+    db = get_db()
+    cur = db.cursor()
+    cur.execute(req, vars)
+    res = cur.fetchone() if one else cur.fetchall()
+    return res
+

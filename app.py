@@ -1,6 +1,6 @@
 from flask import Flask, render_template, redirect, request, session
 from flask_session import Session
-from helpers import close_connection, insert_user, login_required
+from helpers import close_connection, execute, insert_user, login_required
 from werkzeug.security import check_password_hash, generate_password_hash
 
 # Configure application
@@ -33,7 +33,12 @@ def login():
 
     # If user reached route via sending username and password
     if request.method == 'POST':
-        
+        # Check username
+        username = request.form.get('username')
+        # Check password
+        hash = execute('SELECT hash FROM users WHERE username = ?', username, one=True)[0]
+        if check_password_hash(hash, request.form.get('password')):
+            session['user_id'] = execute('SELECT id FROM users WHERE username = ?', username, one=True)[0]
         return redirect('/')
     else:
         return render_template('login.html')
@@ -55,5 +60,5 @@ def register():
         return render_template('register.html')
 
 
-# Close connection to database at the end of context
+# Close connection to database at the end of request
 app.teardown_appcontext(close_connection)
