@@ -16,7 +16,7 @@ def login_required(f):
 # Establish database connection
 def get_db():
     if not hasattr(g, 'sqlite_db'):
-        g.sqlite_db = sqlite3.connect(DATABASE_FILENAME, row_factory=sqlite3.Row)
+        g.sqlite_db = sqlite3.connect(DATABASE_FILENAME)
     return g.sqlite_db
 
 
@@ -25,3 +25,11 @@ def close_connection(exception):
     db = getattr(g, '_sqlite_db', None)
     if db is not None:
         db.close()
+
+
+# Insert user to database
+def insert_user(username, hash):
+    db = get_db()
+    cur = db.cursor()
+    cur.execute('INSERT INTO users (username, hash) VALUES (?, ?)', (username, hash))
+    db.commit()
