@@ -21,6 +21,7 @@ def index():
 @app.route('/chat', methods = ['GET', 'POST'])
 @login_required
 def chat():
+    request.args.get('id')
     return render_template('chat.html')
 
 
@@ -38,6 +39,7 @@ def login():
         # Check password
         hash = execute('SELECT hash FROM users WHERE username = ?', username, one=True)[0]
         if check_password_hash(hash, request.form.get('password')):
+            # Add user's id to session
             session['user_id'] = execute('SELECT id FROM users WHERE username = ?', username, one=True)[0]
         return redirect('/')
     else:

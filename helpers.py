@@ -35,7 +35,7 @@ def insert_user(username, hash):
     db.commit()
 
 
-# Function to execute sql requests to get info froprint(session['user_id'])m db
+# Function to execute sql requests to get info from db
 def execute(req, *vars, one=False):
     db = get_db()
     cur = db.cursor()

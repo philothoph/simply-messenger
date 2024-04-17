@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 
 {% block title %}
-    Chat
+    Chat with {{ username }}
 {% endblock %}
 
 {% block main %}
@@ -11,9 +11,7 @@
         {% endfor %}
     </div>
     <div>
-        <form action="/chat" method="post">
-            <input name="new_message" type="text" autofocus>
-            <input type="submit" value="Send">
-        </form>
+        <input id="new_message" type="text" autofocus placeholder="Type your message here">
+        <input type="submit" value="Send">
     </div>
 {% endblock %}
