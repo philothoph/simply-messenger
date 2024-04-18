@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, request, session
+from flask import Flask, jsonify, render_template, redirect, request, session
 from flask_session import Session
 from helpers import close_connection, execute, insert_user, login_required
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -60,6 +60,26 @@ def register():
         return redirect('/login')
     else:
         return render_template('register.html')
+
+
+@app.route('/receive', methods=['POST'])
+def receive():
+    ''' Receive a message '''
+
+    message = request.json['message']
+    # Code to process message and generate response
+    response = 'Placeholder response'
+    return jsonify({'message': response})
+
+
+@app.route('/send', methods=['POST'])
+def send():
+    ''' Send a message '''
+    
+    message = request.json['message']
+    # Code to handle message send by the user (e.g. store it in database)
+    # For now return a success message
+    return jsonify({'status': 'success'})
 
 
 # Close connection to database at the end of request
