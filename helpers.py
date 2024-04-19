@@ -46,10 +46,10 @@ def execute_query(query, *query_args, one=False):
         one (bool, optional): If True, returns only the first row of the result. Defaults to False.
 
     Returns:
-        The result of the SQL query. If the query is a SELECT statement, returns a single row if one=True,
-        otherwise returns all rows.
+        The result of the SQL query. If the query is a SELECT statement, returns a single row as tuple
+        if one=True, otherwise returns all rows as list of tuples.
         If the query is a SELECT statement and returns no rows, returns None.
-        If the query is an INSERT statement, returns the last inserted row id.
+        If the query is an INSERT statement, returns the last inserted row id as integer.
     """
     # Establish a database connection if not already established
     db = get_db()
