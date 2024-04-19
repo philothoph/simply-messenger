@@ -15,15 +15,39 @@ def login_required(f):
 
 # Establish database connection
 def get_db():
+    """
+    Get a database connection.
+    
+    If a connection is not yet established, establish a new one.
+    
+    Returns:
+        SQLite database connection object.
+    """
+    
+    # Check if 'g' (flask application context) has '_sqlite_db' attribute
     if not hasattr(g, '_sqlite_db'):
+        # If not, establish a new database connection
         g._sqlite_db = sqlite3.connect(DATABASE_FILENAME)
+        # g._sqlite_db.row_factory = sqlite3.Row
+    
     return g._sqlite_db
 
 
 # Close connection to database
 def close_connection(exception):
+    """
+    Close the database connection.
+
+    This function is used as a teardown function by Flask's application context.
+    It checks if there is a database connection and if so, closes it.
+
+    Args:
+        exception: The exception that occurred, if any. Unused in this function.
+    """
     db = getattr(g, '_sqlite_db', None)
     if db is not None:
+        # Get the '_sqlite_db' attribute from the Flask application context 'g'.
+        # If it exists, close the database connection.
         db.close()
 
 
