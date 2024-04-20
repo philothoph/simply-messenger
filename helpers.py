@@ -24,11 +24,16 @@ def get_db():
         SQLite database connection object.
     """
     
-    # Check if 'g' (flask application context) has '_sqlite_db' attribute
+    # Check if 'g' (Flask application context) has '_sqlite_db' attribute
+    # This attribute stores the database connection
     if not hasattr(g, '_sqlite_db'):
         # If not, establish a new database connection
+        # The connection is created with the filename specified in the config module
         g._sqlite_db = sqlite3.connect(DATABASE_FILENAME)
-        # g._sqlite_db.row_factory = sqlite3.Row
+        
+        # Each row that is returned from the database using this connection
+        # instead of a tuple will be a dictionary
+        g._sqlite_db.row_factory = sqlite3.Row
     
     return g._sqlite_db
 
@@ -70,10 +75,11 @@ def execute_query(query, *query_args, one=False):
         one (bool, optional): If True, returns only the first row of the result. Defaults to False.
 
     Returns:
-        The result of the SQL query. If the query is a SELECT statement, returns a single row as tuple
-        if one=True, otherwise returns all rows as list of tuples.
+        The result of the SQL query. If the query is a SELECT statement, returns a single row as dict
+        if one=True, otherwise returns all rows as list of dicts.
         If the query is a SELECT statement and returns no rows, returns None.
         If the query is an INSERT statement, returns the last inserted row id as integer.
+        If it's any other type of statement, returns None.
     """
     # Establish a database connection if not already established
     db = get_db()
