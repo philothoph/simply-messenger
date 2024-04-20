@@ -28,9 +28,6 @@ function sendMessage() {
 
         // Clear the chat input
         chatInput.value = '';
-
-        // Update the chat box
-        receiveMessage();
     }
 }
 
@@ -70,6 +67,11 @@ function receiveMessage() {
         }
         document.getElementById('chat-messages').innerHTML = messages
     })
+}
+
+function updateChat() {
+    sendMessage();
+    setTimeout(receiveMessage, 500);
 }
 
 

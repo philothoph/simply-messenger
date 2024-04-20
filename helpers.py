@@ -69,7 +69,7 @@ def execute_query(sql_query, *query_params, one=False):
 
     Returns:
         The result of the SQL query:
-        - For SELECT statements, a single row as a dictionary if return_one=True,
+        - For SELECT statements, a single row as a dictionary if one=True,
           else a list of dictionaries. If no rows, returns None.
         - For INSERT statements, the last inserted row id.
         - For other statements, None.
@@ -96,7 +96,3 @@ def execute_query(sql_query, *query_params, one=False):
         result = cursor.lastrowid
 
     return result
-
-
-    
-
