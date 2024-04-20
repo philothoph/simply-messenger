@@ -58,47 +58,45 @@ def close_connection(exception):
 
 
 # Function to execute sql requests to get info from and to db
-def execute_query(query, *query_args, one=False):
+def execute_query(sql_query, *query_params, one=False):
     """
     Executes a SQL query on the database and returns the result.
 
     Args:
-        query (str): The SQL query to execute.
-        query_args (tuple, optional): The parameters to substitute in the query. Defaults to ().
-        one (bool, optional): If True, returns only the first row of the result. Defaults to False.
+        sql_query (str): The SQL query to execute.
+        query_params (tuple, optional): The parameters to substitute in the query.
+        return_one (bool, optional): If True, returns only the first row of the result.
 
     Returns:
-        The result of the SQL query. If the query is a SELECT statement, returns a single row as dict
-        if one=True, otherwise returns all rows as list of dicts.
-        If the query is a SELECT statement and returns no rows, returns None.
-        If the query is an INSERT statement, returns the last inserted row id as integer.
-        If it's any other type of statement, returns None.
+        The result of the SQL query:
+        - For SELECT statements, a single row as a dictionary if return_one=True,
+          else a list of dictionaries. If no rows, returns None.
+        - For INSERT statements, the last inserted row id.
+        - For other statements, None.
     """
-    # Establish a database connection if not already established
+    # Get the database connection
     db = get_db()
     
-    # Create a cursor object to execute the query
+    # Create a cursor for the database connection
     cursor = db.cursor()
     
     # Execute the SQL query
-    cursor.execute(query, query_args)
+    cursor.execute(sql_query, query_params)
     
-    # Determine the type of query and return the appropriate result
-    if query.split()[0].lower() == 'select':
-        # If it's a SELECT statement, return one row if one=True, else return all rows
+    # Initialize the result variable
+    result = None
+    
+    # Check the type of the SQL query
+    if sql_query.split()[0].lower() == 'select':
+        # If it's a SELECT statement, get the result
         result = cursor.fetchone() if one else cursor.fetchall()
-        # If result is not empty, return it, otherwise return None
-        if result:
-            return result
-        else:
-            return None
-    elif query.split()[0].lower() == 'insert':
-        # If it's an INSERT statement, commit the changes and return the last inserted row id
+    elif sql_query.split()[0].lower() == 'insert':
+        # If it's an INSERT statement, commit the transaction and get the last inserted row id
         db.commit()
-        return cursor.lastrowid
-    else:
-        # If it's any other type of statement, return None
-        return None
+        result = cursor.lastrowid
+
+    return result
+
 
     
 
