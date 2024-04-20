@@ -3,6 +3,7 @@ from flask import g, redirect, session
 from functools import wraps
 import sqlite3
 
+
 # Decorator to ensure user is logged in
 def login_required(f):
     @wraps(f)
@@ -54,14 +55,6 @@ def close_connection(exception):
         # Get the '_sqlite_db' attribute from the Flask application context 'g'.
         # If it exists, close the database connection.
         db.close()
-
-
-# Insert user to database
-def insert_user(username, hash):
-    db = get_db()
-    cur = db.cursor()
-    cur.execute('INSERT INTO users (username, hash) VALUES (?, ?)', (username, hash))
-    db.commit()
 
 
 # Function to execute sql requests to get info from and to db
