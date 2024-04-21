@@ -18,11 +18,14 @@ def index():
     return render_template('index.html')
     
 
-@app.route('/chat', methods = ['GET', 'POST'])
+@app.route('/chat')
 @login_required
 def chat():
-    request.args.get('id')
-    return render_template('chat.html')
+    name = request.args.get('name')
+    recipient_id = execute_query('SELECT id FROM users WHERE username = ?', request.args.get('name'), one=True)
+    if recipient_id:
+        recipient_id = recipient_id['id']
+    return render_template('chat.html', name=name, recipient_id=recipient_id)
 
 
 @app.route('/login', methods = ['GET', 'POST'])
@@ -74,14 +77,15 @@ def receive():
     Returns:
         A JSON response with a 'message' key containing the generated response.
     """
-    
+
+    recipient_id = request.json['recipient_id']
+
     # Process the message and generate a response
-    # TODO Replace placeholder value with actual variable for recipient_id
     response = execute_query(''' 
                     SELECT sender_id, content FROM messages 
                     WHERE (sender_id = ? AND recipient_id = ?) OR (sender_id = ? AND recipient_id = ?) 
                     ORDER BY timestamp ASC
-                    ''', session['user_id'], 0, 0, session['user_id'])
+                    ''', session['user_id'], recipient_id, recipient_id, session['user_id'])
 
     # Convert Row objects to dictionaries
     response = [dict(row) for row in response]
@@ -106,13 +110,13 @@ def send():
     """
     # Extract the message from the JSON
     message = request.json['message']
+    recipient_id = request.json['recipient_id']
 
     # Store the message in the database
-    # TODO: Replace the placeholder recipient_id value with the actual variable
     execute_query('''
         INSERT INTO messages (sender_id, recipient_id, content, timestamp)
         VALUES (?, ?, ?, CURRENT_TIMESTAMP)
-        ''', session['user_id'], 0, message)
+        ''', session['user_id'], recipient_id, message)
 
     # Return a JSON response indicating success
     return jsonify({'status': 'success'})

@@ -20,7 +20,7 @@ function sendMessage() {
             // Set the 'Content-Type' header to 'application/json'
             headers: { 'Content-Type': 'application/json' },
             // Convert the message to a JSON string and set it as the request body
-            body: JSON.stringify({ message })
+            body: JSON.stringify({ message : message, recipient_id: document.getElementById('recipient_id').value })
         };
         
         // Send the POST request to '/send' endpoint

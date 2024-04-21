@@ -1,10 +1,11 @@
 {% extends "layout.html" %}
 
 {% block title %}
-    Chat with {{ username }}
+    Chat with {{ name }}
 {% endblock %}
 
 {% block main %}
+    <input hidden id="recipient_id" value="{{ recipient_id }}">
     <div id="chat-box">
         <div id="chat-messages"></div>
     </div>
