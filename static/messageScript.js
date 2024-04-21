@@ -45,18 +45,10 @@ function receiveMessage() {
         // Set the 'Content-Type' header to 'application/json'
         headers: { 'Content-Type': 'application/json' },
         // Set the request body to an empty string
-        body: JSON.stringify({})
+        body: JSON.stringify({recipient_id: document.getElementById('recipient_id').value})
     }
     // Send a POST request to '/receive' with a placeholder message
-    fetch('/receive', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            message: 'Placeholder message'
-        })
-    })
+    fetch('/receive', requestOptions)
     // Parse the response
     .then(response => response.json())
     // Extract the 'message' from the JSON and display it in the chat-box
