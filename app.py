@@ -15,7 +15,12 @@ Session(app)
 @app.route('/')
 @login_required
 def index():
-    return render_template('index.html')
+    contacts = execute_query('''
+                             SELECT username FROM users WHERE id IN 
+                             (SELECT recipient_id FROM messages WHERE sender_id = ?)
+                             ''', session['user_id'])
+    contacts = [contact['username'] for contact in contacts]
+    return render_template('index.html', contacts=contacts)
     
 
 @app.route('/chat')
