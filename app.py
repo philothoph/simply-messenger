@@ -15,21 +15,36 @@ Session(app)
 @app.route('/')
 @login_required
 def index():
+    ''' Show contacts list '''
+
+    # Get list of contacts whom logged-in user has sent messages 
     contacts = execute_query('''
                              SELECT username FROM users WHERE id IN 
                              (SELECT recipient_id FROM messages WHERE sender_id = ?)
                              ''', session['user_id'])
+    # Convert Row objects to list of strings
     contacts = [contact['username'] for contact in contacts]
+    
     return render_template('index.html', contacts=contacts)
     
 
 @app.route('/chat')
 @login_required
 def chat():
+    ''' Chat with user '''
+
+    # Get the username from the request arguments
     name = request.args.get('name')
-    recipient_id = execute_query('SELECT id FROM users WHERE username = ?', request.args.get('name'), one=True)
+    
+    # Get the user's id from the database
+    recipient_id = execute_query(
+        'SELECT id FROM users WHERE username = ?', 
+        request.args.get('name'), one=True)
+    
+    # If a user is found, get the id
     if recipient_id:
         recipient_id = recipient_id['id']
+    
     return render_template('chat.html', name=name, recipient_id=recipient_id)
 
 
