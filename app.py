@@ -1,6 +1,7 @@
 from flask import Flask, jsonify, render_template, redirect, request, session
 from flask_session import Session
 from helpers import close_connection, execute_query, login_required
+from re import match
 from werkzeug.security import check_password_hash, generate_password_hash
 
 # Configure application
@@ -76,6 +77,21 @@ def register():
     if request.method == 'POST':
         # Check username
         username = request.form.get('username')
+        if not username:
+            return render_template('register.html', error='Please enter a username')
+        if not execute_query('SELECT id FROM users WHERE username = ?', username, one=True):
+            return render_template('register.html', error='Username already exists')
+        # Regular expression to check if the username starts with a letter and only contains letters and numbers
+        if not match(r'^[A-Za-z][A-Za-z0-9]*$', username):
+            return render_template('register.html', 
+                                   error='Username must start with a letter and contain only letters and numbers')        
+
+        # Check password
+        if not request.form.get('password'):
+            return render_template('register.html', error='Please enter a password')
+        if request.form.get('password') != request.form.get('repeat_password'):
+            return render_template('register.html', error='Passwords do not match')
+        
         # Generate hash for password
         hash = generate_password_hash(request.form.get('password'))
         # Add user to database
