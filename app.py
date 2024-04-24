@@ -60,12 +60,22 @@ def login():
     if request.method == 'POST':
         # Check username
         username = request.form.get('username')
+        if not username:
+            return render_template('login.html', error='Please enter a username')
+        if not execute_query('SELECT id FROM users WHERE username = ?', username, one=True):
+            return render_template('login.html', error='Username or password is incorrect')
+    
         # Check password
+        if not request.form.get('password'):
+            return render_template('login.html', error='Please enter a password')
+        
         hash = execute_query('SELECT hash FROM users WHERE username = ?', username, one=True)['hash']
         if check_password_hash(hash, request.form.get('password')):
             # Add user's id to session
             session['user_id'] = execute_query('SELECT id FROM users WHERE username = ?', username, one=True)['id']
-        return redirect('/')
+            return redirect('/')
+        else:
+            return render_template('login.html', error='Username or password is incorrect')
     else:
         return render_template('login.html')
     
