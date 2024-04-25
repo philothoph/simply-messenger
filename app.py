@@ -89,7 +89,7 @@ def register():
         username = request.form.get('username')
         if not username:
             return render_template('register.html', error='Please enter a username')
-        if not execute_query('SELECT id FROM users WHERE username = ?', username, one=True):
+        if execute_query('SELECT id FROM users WHERE username = ?', username, one=True):
             return render_template('register.html', error='Username already exists')
         # Regular expression to check if the username starts with a letter and only contains letters and numbers
         if not match(r'^[A-Za-z][A-Za-z0-9]*$', username):
@@ -128,7 +128,8 @@ def receive():
 
     # Process the message and generate a response
     response = execute_query(''' 
-                    SELECT sender_id, content FROM messages 
+                    SELECT username, content, timestamp FROM messages
+                    JOIN users ON sender_id = users.id
                     WHERE (sender_id = ? AND recipient_id = ?) OR (sender_id = ? AND recipient_id = ?) 
                     ORDER BY timestamp ASC
                     ''', session['user_id'], recipient_id, recipient_id, session['user_id'])
