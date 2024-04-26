@@ -133,6 +133,10 @@ def receive():
                     WHERE (sender_id = ? AND recipient_id = ?) OR (sender_id = ? AND recipient_id = ?) 
                     ORDER BY timestamp ASC
                     ''', session['user_id'], recipient_id, recipient_id, session['user_id'])
+    
+    # Mark messages as read
+    execute_query('UPDATE messages SET seen = 1 WHERE sender_id = ? AND recipient_id = ?', 
+                  recipient_id, session['user_id'])
 
     # Convert Row objects to dictionaries
     response = [dict(row) for row in response]

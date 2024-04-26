@@ -71,7 +71,6 @@ def execute_query(sql_query, *query_params, one=False):
         The result of the SQL query:
         - For SELECT statements, a single row as a dictionary if one=True,
           else a list of dictionaries. If no rows, returns None.
-        - For INSERT statements, the last inserted row id.
         - For other statements, None.
     """
     # Get the database connection
@@ -90,9 +89,8 @@ def execute_query(sql_query, *query_params, one=False):
     if sql_query.split()[0].lower() == 'select':
         # If it's a SELECT statement, get the result
         result = cursor.fetchone() if one else cursor.fetchall()
-    elif sql_query.split()[0].lower() == 'insert':
-        # If it's an INSERT statement, commit the transaction and get the last inserted row id
+    elif sql_query.split()[0].lower() in ('insert', 'update', 'delete'):
+        # If it's an INSERT, UPDATE or DELETE statement, commit changes
         db.commit()
-        result = cursor.lastrowid
 
     return result
