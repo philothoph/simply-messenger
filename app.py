@@ -128,18 +128,25 @@ def receive():
 
     # Process the message and generate a response
     response = execute_query(''' 
-                    SELECT username, content, timestamp FROM messages
+                    SELECT users.username, messages.content, messages.timestamp, messages.id FROM messages
                     JOIN users ON sender_id = users.id
                     WHERE (sender_id = ? AND recipient_id = ?) OR (sender_id = ? AND recipient_id = ?) 
                     ORDER BY timestamp ASC
                     ''', session['user_id'], recipient_id, recipient_id, session['user_id'])
     
-    # Mark messages as read
-    execute_query('UPDATE messages SET seen = 1 WHERE sender_id = ? AND recipient_id = ?', 
-                  recipient_id, session['user_id'])
-
     # Convert Row objects to dictionaries
     response = [dict(row) for row in response]
+
+    # Get id of first and last message
+    if response:
+        first_id = response[0]['id']
+        last_id = response[-1]['id']
+    else:
+        first_id = -1
+        last_id = -1
+
+    # Update seen status of messages in database
+    execute_query('UPDATE messages SET seen = 1 WHERE id >= ? AND id <= ?', first_id, last_id)
 
     # Return a JSON response with the generated response
     return response
@@ -154,7 +161,7 @@ def send():
     This function handles the POST request to send a message. It expects a
     JSON with a 'message' key. The message is stored in the database
     along with the sender's ID, a placeholder recipient ID, and the current
-    timestamp. Currently, the recipient ID is fixed to 0.
+    timestamp.
 
     Returns:
         A JSON response with a 'status' key containing the string 'success'.
