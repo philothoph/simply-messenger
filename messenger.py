@@ -21,8 +21,12 @@ def index():
     # Get list of contacts with whom logged-in user has exchanged messages 
     contacts = execute_query('''
                              SELECT username FROM users WHERE id IN 
-                             (SELECT recipient_id FROM messages WHERE sender_id = ? OR recipient_id = ?)
-                             ''', session['user_id'], session['user_id'])
+                             (SELECT recipient_id FROM messages WHERE sender_id = ?)
+                             ''', session['user_id'])
+    contacts += execute_query('''
+                              SELECT username FROM users WHERE id IN 
+                              (SELECT sender_id FROM messages WHERE recipient_id = ?)
+                              ''', session['user_id'])
     # Convert Row objects to list of strings
     contacts = [contact['username'] for contact in contacts]
     
@@ -114,14 +118,18 @@ def register():
 @app.route('/receive', methods=['POST'])
 def receive():
     """
-    Receive a message and generate a response.
+    Handle a POST request to receive a message and generate a response.
 
-    This function handles a POST request to receive a message. It expects a
-    JSON with a 'message' key. The function processes the message and generates
-    a response, which is then returned as a JSON.
-
+    This function receives a JSON with a 'recipient_id' key. It processes
+    the message and generates a response, which is then returned as a JSON.
+    The response is a list of dictionaries containing 'username', 'content',
+    'timestamp', and 'id' (of messages) as keys. The function retrieves messages from the 
+    database that are addressed to the recipient and orders them by timestamp
+    in ascending order.
+    
     Returns:
-        A JSON response with a 'message' key containing the generated response.
+        A JSON response with a list of dictionaries containing the
+        generated response.
     """
 
     recipient_id = request.json['recipient_id']
