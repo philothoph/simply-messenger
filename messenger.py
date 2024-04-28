@@ -26,10 +26,30 @@ def index():
                              SELECT recipient_id FROM messages WHERE sender_id = ?)
                              ''', session['user_id'], session['user_id'])
     
+    # Count the number of new messages for each contact
+    new_messages = execute_query('''
+                                SELECT users.username, COUNT(*) AS count FROM messages
+                                JOIN users ON users.id = sender_id
+                                WHERE recipient_id = ? AND seen = 0
+                                GROUP BY sender_id
+                                ''', session['user_id'])                                    
+
     # Convert Row objects to list of strings
     contacts = [contact['username'] for contact in contacts]
+
+    # Convert Row objects to list of dictionaries
+    dict_contacts = [dict(row) for row in contacts]
     
-    return render_template('index.html', contacts=contacts)
+    # Convert Row objects to list of dictionaries
+    new_messages = [dict(row) for row in new_messages]
+    
+    # Add new_messages to dict_contacts
+    for contact in dict_contacts:
+        for new_message in new_messages:
+            if contact['username'] == new_message['username']:
+                contact['new_messages'] = new_message['count']
+    
+    return render_template('index.html', contacts=contacts, dict_contacts=dict_contacts)
     
 
 @app.route('/chat')

@@ -11,6 +11,11 @@
                 <li><a href="/chat?name={{ contact }}">{{ contact }}</a></li>
             {% endfor %}
         </ul>
+        <ul>
+            {% for contact in dict_contacts %}
+                <li><a href="/chat?name={{ contact.username }}">{{ contact.username }}</a></li>
+            {% endfor %}
+        </ul>
     </div>
     <div>
         <form action="/chat">
