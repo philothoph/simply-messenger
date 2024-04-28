@@ -16,13 +16,13 @@ Session(app)
 @app.route('/')
 @login_required
 def index():
-    ''' Show contacts list '''
+    ''' Show contacts list with number of new messages '''
 
-    # Get list of contacts whom logged-in user has sent messages 
+    # Get list of contacts with whom logged-in user has exchanged messages 
     contacts = execute_query('''
                              SELECT username FROM users WHERE id IN 
-                             (SELECT recipient_id FROM messages WHERE sender_id = ?)
-                             ''', session['user_id'])
+                             (SELECT recipient_id FROM messages WHERE sender_id = ? OR recipient_id = ?)
+                             ''', session['user_id'], session['user_id'])
     # Convert Row objects to list of strings
     contacts = [contact['username'] for contact in contacts]
     
