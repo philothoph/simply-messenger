@@ -35,21 +35,18 @@ def index():
                                 ''', session['user_id'])   
 
     # Convert Row objects to list of dictionaries
-    dict_contacts = [dict(row) for row in contacts]                                 
-
-    # Convert Row objects to list of strings
-    contacts = [contact['username'] for contact in contacts]
+    contacts = [dict(row) for row in contacts]                                 
     
     # Convert Row objects to list of dictionaries
     new_messages = [dict(row) for row in new_messages]
     
     # Add new_messages to dict_contacts
-    for contact in dict_contacts:
+    for contact in contacts:
         for new_message in new_messages:
             if contact['username'] == new_message['username']:
                 contact['new_messages'] = new_message['count']
     
-    return render_template('index.html', contacts=contacts, dict_contacts=dict_contacts)
+    return render_template('index.html', contacts=contacts)
     
 
 @app.route('/chat')
