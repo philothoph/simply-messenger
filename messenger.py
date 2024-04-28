@@ -32,13 +32,13 @@ def index():
                                 JOIN users ON users.id = sender_id
                                 WHERE recipient_id = ? AND seen = 0
                                 GROUP BY sender_id
-                                ''', session['user_id'])                                    
+                                ''', session['user_id'])   
+
+    # Convert Row objects to list of dictionaries
+    dict_contacts = [dict(row) for row in contacts]                                 
 
     # Convert Row objects to list of strings
     contacts = [contact['username'] for contact in contacts]
-
-    # Convert Row objects to list of dictionaries
-    dict_contacts = [dict(row) for row in contacts]
     
     # Convert Row objects to list of dictionaries
     new_messages = [dict(row) for row in new_messages]

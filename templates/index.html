@@ -13,7 +13,7 @@
         </ul>
         <ul>
             {% for contact in dict_contacts %}
-                <li><a href="/chat?name={{ contact.username }}">{{ contact.username }}</a></li>
+                <li><a href="/chat?name={{ contact.username }}">{{ contact.username }}</a>{{contact.new_messages if contact.new_messages else ''}}</li>
             {% endfor %}
         </ul>
     </div>
