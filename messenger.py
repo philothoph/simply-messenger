@@ -146,7 +146,8 @@ def receive():
         last_id = -1
 
     # Update seen status of messages in database
-    execute_query('UPDATE messages SET seen = 1 WHERE id >= ? AND id <= ?', first_id, last_id)
+    execute_query('UPDATE messages SET seen = 1 WHERE (id >= ? AND id <= ?) AND recipient_id = ?',
+                   first_id, last_id, session['user_id'])
 
     # Return a JSON response with the generated response
     return response
