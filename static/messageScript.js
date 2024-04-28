@@ -67,5 +67,6 @@ function updateChat() {
 }
 
 
-// Periodically check for new messages (for demonstration purposes)
+// Periodically check for new messages
+receiveMessage();
 setInterval(receiveMessage, 5000); // Fetch new messages every 5 seconds
