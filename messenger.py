@@ -21,12 +21,11 @@ def index():
     # Get list of contacts with whom logged-in user has exchanged messages 
     contacts = execute_query('''
                              SELECT username FROM users WHERE id IN 
-                             (SELECT recipient_id FROM messages WHERE sender_id = ?)
-                             ''', session['user_id'])
-    contacts += execute_query('''
-                              SELECT username FROM users WHERE id IN 
-                              (SELECT sender_id FROM messages WHERE recipient_id = ?)
-                              ''', session['user_id'])
+                             (SELECT sender_id FROM messages WHERE recipient_id = ?
+                             UNION
+                             SELECT recipient_id FROM messages WHERE sender_id = ?)
+                             ''', session['user_id'], session['user_id'])
+    
     # Convert Row objects to list of strings
     contacts = [contact['username'] for contact in contacts]
     
