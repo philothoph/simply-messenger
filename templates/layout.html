@@ -5,6 +5,8 @@
         <meta charset="utf-8">
         <meta name="viewport" content="initial-scale=1, width=device-width">
 
+        <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+
         <title>Simply: {% block title %}{% endblock %}</title>
     </head>
 
@@ -13,9 +15,7 @@
             {% block main %}{% endblock %}
         </main>
 
-        <footer>
-            © Dmitry Lukyanov
-        </footer>
+        <footer id="footer"><a href="https://github.com/philothoph/simply-messenger">© Dmitry Lukyanov</a></footer>
     </body>
 
 </html>

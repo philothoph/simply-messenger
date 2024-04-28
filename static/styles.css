@@ -1,0 +1,12 @@
+#footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    text-align: center;
+    font-size: small
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
