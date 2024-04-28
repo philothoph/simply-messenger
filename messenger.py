@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, render_template, redirect, request, session
+from flask import Flask, flash, jsonify, render_template, redirect, request, session
 from flask_session import Session
 from helpers import close_connection, execute_query, login_required
 from re import match
@@ -65,6 +65,10 @@ def chat():
     # If a user is found, get the id
     if recipient_id:
         recipient_id = recipient_id['id']
+    else:
+        # If a user is not found, redirect to index and return error message
+        flash('User ' + name + ' not found')
+        return redirect('/')
     
     return render_template('chat.html', name=name, recipient_id=recipient_id)
 
