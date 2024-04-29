@@ -57,7 +57,7 @@ function receiveMessage() {
         for (const message of data) {
             messages += `<p>${message.username}: ${message.content}</p>`
         }
-        document.getElementById('chat-messages').innerHTML = messages
+        document.getElementById('chat-messages').innerHTML += messages
     })
 }
 

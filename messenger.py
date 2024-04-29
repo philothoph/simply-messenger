@@ -158,7 +158,7 @@ def receive():
     response = execute_query(''' 
                     SELECT users.username, messages.content, messages.timestamp, messages.id FROM messages
                     JOIN users ON sender_id = users.id
-                    WHERE (sender_id = ? AND recipient_id = ?) OR (sender_id = ? AND recipient_id = ?) 
+                    WHERE seen = 0 AND ((sender_id = ? AND recipient_id = ?) OR (sender_id = ? AND recipient_id = ?)) 
                     ORDER BY timestamp ASC
                     ''', session['user_id'], recipient_id, recipient_id, session['user_id'])
     
