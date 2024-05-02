@@ -13,7 +13,7 @@
     </head>
 
     <body>
-        <nav class="navbar navbar-expand-sm navbar-dark bg-dark">
+        <nav class="navbar navbar-expand-sm navbar-dark bg-dark fixed-top">
             <div class="container-fluid">
                 <a class="navbar-brand" href="/">Simply</a>
                 <ul class="navbar-nav ms-auto">
@@ -23,7 +23,7 @@
                 </ul>
             </div>
         </nav> 
-        <main class="container py-5 text-center">
+        <main class="container py-5 text-center" style="max-width: 50%;">
             {% block main %}{% endblock %}
         </main>
 
