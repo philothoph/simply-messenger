@@ -28,6 +28,9 @@ function sendMessage() {
 
         // Clear the chat input
         chatInput.value = '';
+
+        // Add the message to the chat box
+        document.getElementById('chat-messages').innerHTML += `<p>You: ${message}</p>`;
     }
 }
 
@@ -60,6 +63,17 @@ function receiveMessage() {
         document.getElementById('chat-messages').innerHTML += messages
     })
 }
+
+
+/**
+ * Function to send message on Enter key press.
+ */
+document.getElementById('new_message').addEventListener('keypress', function(event) {
+    if (event.key === 'Enter') {
+        sendMessage();
+    }
+});
+
 
 function updateChat() {
     sendMessage();
