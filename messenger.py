@@ -114,7 +114,7 @@ def register():
         if not username:
             return render_template('register.html', error='Please enter a username')
         if execute_query('SELECT id FROM users WHERE username = ?', username, one=True):
-            return render_template('register.html', error='Username already exists')
+            return render_template('register.html', error='User already exists')
         # Regular expression to check if the username starts with a letter and only contains letters and numbers
         if not match(r'^[A-Za-z][A-Za-z0-9]*$', username):
             return render_template('register.html', 
