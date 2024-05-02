@@ -67,7 +67,8 @@ def chat():
         recipient_id = recipient_id['id']
     else:
         # If a user is not found, redirect to index and return error message
-        flash('User ' + name + ' not found')
+        if name:
+            flash('User ' + name + ' not found')
         return redirect('/')
     
     return render_template('chat.html', name=name, recipient_id=recipient_id)
