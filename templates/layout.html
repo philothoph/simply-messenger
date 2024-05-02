@@ -23,11 +23,11 @@
                 </ul>
             </div>
         </nav> 
-        <main class="container py-5 text-center" style="max-width: 800px">
+        <main class="container py-3 text-center" style="max-width: 800px">
             {% block main %}{% endblock %}
         </main>
 
-        <footer id="footer"><a href="https://github.com/philothoph/simply-messenger">© Dmitry Lukyanov</a></footer>
+        {% block footer %}<footer id="footer"><a href="https://github.com/philothoph/simply-messenger">© Dmitry Lukyanov</a></footer>{% endblock %}
     </body>
 
 </html>

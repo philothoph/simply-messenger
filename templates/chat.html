@@ -7,21 +7,20 @@
 {% block main %}
         <input hidden id="recipient_id" value="{{ recipient_id }}">
         
-        <div class="card mt-3" style="height: 90vh;">
-        
-        <div class="card-body chat-window overflow-auto">
-            <div id="chat-messages"></div>
-        </div>
+        <div class="card mt-5" style="height: 90vh">
+            <div class="card-body chat-window overflow-auto">
+                <div id="chat-messages"></div>
+            </div>
 
-        <div class="card-footer">
-            <div class="input-group mx-auto bg-light">
-                <input id="new_message" class="form-control shadow-none" placeholder="Type your message here" type="text" autofocus value="" autocomplete="off">
-                <input id="send_button" class="btn btn-outline-secondary" type="button" value="Send" onclick="updateChat()">
+            <div class="card-footer">
+                <div class="input-group mx-auto bg-light">
+                    <input id="new_message" class="form-control shadow-none" placeholder="Type your message here" type="text" autofocus value="" autocomplete="off">
+                    <input id="send_button" class="btn btn-outline-secondary" type="button" value="Send" onclick="updateChat()">
+                </div>
             </div>
         </div>
 
-        </div>
-
     <script src="{{ url_for('static', filename='messageScript.js') }}"></script>
-   
 {% endblock %}
+
+{% block footer %}{% endblock %}
