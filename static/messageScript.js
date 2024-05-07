@@ -29,8 +29,15 @@ function sendMessage() {
         // Clear the chat input
         chatInput.value = '';
 
+        // Make message object
+        const messageObject = {
+            username: 'you',
+            content: message,
+            timestamp: new Date().toISOString()
+        };
+
         // Add the message to the chat box
-        document.getElementById('chat-messages').innerHTML += `<p>You: ${message}</p>`;
+        document.getElementById('chat-messages').innerHTML += wrapMessage(messageObject);
     }
 }
 
@@ -58,10 +65,29 @@ function receiveMessage() {
     .then(data => {
         let messages = ''
         for (const message of data) {
-            messages += `<p>${message.username}: ${message.content}</p>`
+            messages += wrapMessage(message)
         }
         document.getElementById('chat-messages').innerHTML += messages
     })
+}
+
+
+/**
+ * Function to wrap message in a container with username and timestamp
+ * @param {Object} message - The message object with 'username' and 'content' keys
+ * @param {string} message.username - The username of the sender
+ * @param {string} message.content - The content of the message
+ * @param {string} message.timestamp - The timestamp of the message
+ * @returns {string} The message wrapped in a container with username and timestamp
+ */
+function wrapMessage(message) {
+    const timestamp = new Date(message.timestamp).toLocaleString(); // Get the current timestamp
+    if (message.username == document.getElementById('username').value) {
+        return `<div class="d-flex"><div class="card mb-2 me-5" style="background-color: #ced4da; width: fit-content"><span class="text-muted small mx-1">${message.username} (${timestamp})</span><div>${message.content}</div></div></div>`;
+    }
+    else {
+        return `<div class="d-flex justify-content-end"><div class="card mb-2 ms-5" style="background-color: #e9ecef; width: fit-content"><span class="text-muted small mx-1">you (${timestamp})</span><div>${message.content}</div></div></div>`;
+    }
 }
 
 
