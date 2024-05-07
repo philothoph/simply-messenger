@@ -83,12 +83,20 @@ function receiveMessage(old = false) {
  * @returns {string} The message wrapped in a container with username and timestamp
  */
 function wrapMessage(message) {
-    const timestamp = new Date(message.timestamp).toLocaleString(); // Get the current timestamp
+    const timestamp = new Date(message.timestamp).toLocaleString('ru-RU'); // Get the current timestamp
     if (message.username == document.getElementById('username').value) {
-        return `<div class="d-flex"><div class="card mb-2 me-5" style="background-color: #ced4da; width: fit-content"><span class="text-muted small mx-1">${message.username} (${timestamp})</span><div>${message.content}</div></div></div>`;
+        return `<div class="d-flex">
+                    <div class="card mb-2 me-5" style="background-color: #ced4da; width: fit-content" data-bs-toggle="tooltip" data-bs-placement="top" title="${timestamp}">
+                        <div class="card-body">${message.content}</div>
+                    </div>
+                </div>`;
     }
     else {
-        return `<div class="d-flex justify-content-end"><div class="card mb-2 ms-5" style="background-color: #e9ecef; width: fit-content"><span class="text-muted small mx-1">you (${timestamp})</span><div>${message.content}</div></div></div>`;
+        return `<div class="d-flex justify-content-end">
+                    <div class="card mb-2 ms-5" style="background-color: #e9ecef; width: fit-content" data-bs-toggle="tooltip" data-bs-placement="top" title="${timestamp}">
+                        <div class="card-body">${message.content}</div>
+                    </div>
+                </div>`;
     }
 }
 
@@ -108,6 +116,10 @@ function updateChat() {
     setTimeout(receiveMessage, 500);
 }
 
+
+// Enable tooltips
+const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
 
 // Initially load messages
 receiveMessage(true);
