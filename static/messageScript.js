@@ -37,7 +37,7 @@ function sendMessage() {
         };
 
         // Add the message to the chat box
-        document.getElementById('chat-messages').innerHTML += wrapMessage(messageObject);
+        document.getElementById('chat-messages').innerHTML = wrapMessage(messageObject) + document.getElementById('chat-messages').innerHTML;
     }
 }
 
@@ -47,15 +47,15 @@ function sendMessage() {
  * Receives a JSON response with a 'message' key.
  * Displays the received message in the chat-box.
  */
-function receiveMessage() {
+function receiveMessage(old = false) {
     // Set up the request options
     const requestOptions = {
         // Specify the HTTP method
         method: 'POST',
         // Set the 'Content-Type' header to 'application/json'
         headers: { 'Content-Type': 'application/json' },
-        // Set the request body to an empty string
-        body: JSON.stringify({recipient_id: document.getElementById('recipient_id').value})
+        // Set the request body to the recipient_id and old variables
+        body: JSON.stringify({recipient_id: document.getElementById('recipient_id').value, old: old})
     }
     // Send a POST request to '/receive' with a placeholder message
     fetch('/receive', requestOptions)
@@ -67,7 +67,9 @@ function receiveMessage() {
         for (const message of data) {
             messages += wrapMessage(message)
         }
-        document.getElementById('chat-messages').innerHTML += messages
+        
+        // Add the messages to the top of the chat box
+        document.getElementById('chat-messages').innerHTML = messages + document.getElementById('chat-messages').innerHTML;
     })
 }
 
@@ -107,6 +109,8 @@ function updateChat() {
 }
 
 
+// Initially load messages
+receiveMessage(true);
+
 // Periodically check for new messages
-receiveMessage();
-setInterval(receiveMessage, 5000); // Fetch new messages every 5 seconds
+setInterval(receiveMessage, 5000);

@@ -155,28 +155,42 @@ def receive():
 
     recipient_id = request.json['recipient_id']
 
-    # Process the message and generate a response
-    response = execute_query(''' 
+    # Check which messages to load
+    old = request.json.get('old', False)
+  
+
+    if old:
+        # If load old messages
+        response = execute_query('''
+                    SELECT users.username, messages.content, messages.timestamp, messages.id FROM messages
+                    JOIN users ON sender_id = users.id
+                    WHERE (sender_id = ? AND recipient_id = ?) OR (sender_id = ? AND recipient_id = ?)
+                    ORDER BY timestamp DESC
+                    LIMIT 10
+                    ''', recipient_id, session['user_id'], session['user_id'], recipient_id)
+    else:
+        # If load new messages
+        response = execute_query(''' 
                     SELECT users.username, messages.content, messages.timestamp, messages.id FROM messages
                     JOIN users ON sender_id = users.id
                     WHERE seen = 0 AND (sender_id = ? AND recipient_id = ?)
-                    ORDER BY timestamp ASC
+                    ORDER BY timestamp DESC
                     ''', recipient_id, session['user_id'])
-    
+        
     # Convert Row objects to dictionaries
     response = [dict(row) for row in response]
 
     # Get id of first and last message
     if response:
-        first_id = response[0]['id']
-        last_id = response[-1]['id']
+        first_id = response[-1]['id']
+        last_id = response[0]['id']
     else:
         first_id = -1
         last_id = -1
 
     # Update seen status of messages in database
-    execute_query('UPDATE messages SET seen = 1 WHERE (id >= ? AND id <= ?) AND recipient_id = ?',
-                   first_id, last_id, session['user_id'])
+    execute_query('UPDATE messages SET seen = 1 WHERE (id >= ? AND id <= ?) AND recipient_id = ? AND seen = 0',
+                first_id, last_id, session['user_id'])
 
     # Return a JSON response with the generated response
     return response
