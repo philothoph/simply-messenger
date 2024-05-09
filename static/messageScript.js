@@ -108,14 +108,14 @@ function wrapMessage(message) {
     const timestamp = new Date(message.timestamp).toLocaleString('ru-RU'); // Get the current timestamp
     if (message.username == document.getElementById('username').value) {
         return `<div class="d-flex">
-                    <div class="card mb-2 me-5" style="background-color: #ced4da; width: fit-content" data-bs-toggle="tooltip" data-bs-placement="top" title="${timestamp}">
+                    <div class="card mb-2 me-5" style="background-color: #ced4da; width: fit-content" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="${timestamp}">
                         <div class="card-body">${message.content}</div>
                     </div>
                 </div>`;
     }
     else {
         return `<div class="d-flex justify-content-end">
-                    <div class="card mb-2 ms-5" style="background-color: #e9ecef; width: fit-content" data-bs-toggle="tooltip" data-bs-placement="top" title="${timestamp}">
+                    <div class="card mb-2 ms-5" style="background-color: #e9ecef; width: fit-content" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="${timestamp}">
                         <div class="card-body">${message.content}</div>
                     </div>
                 </div>`;
@@ -143,17 +143,6 @@ function checkScrollPosition() {
 // Add an event listener to the chat box
 const chatBox = document.getElementById('chat-messages');
 chatBox.addEventListener('scroll', checkScrollPosition);
-
-
-// Enable and reenable tooltips every time new messages are loaded
-function enableTooltips() {
-    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
-    const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
-}
-
-
-// Enable tooltips
-enableTooltips();
 
 
 // Initially load messages
