@@ -157,24 +157,33 @@ def receive():
 
     # Check which messages to load
     old = request.json.get('old', False)
-  
 
     if old:
+        # Get last message id
+        last_message_id = request.json.get('last_message_id', None)
+        print(last_message_id)
+        if last_message_id is None:
+            last_message_id = execute_query('''
+                                SELECT MAX(id) FROM messages 
+                                WHERE (sender_id = ? AND recipient_id = ?) OR (sender_id = ? AND recipient_id = ?)
+                                ''', recipient_id, session['user_id'], session['user_id'], recipient_id, one=True)['MAX(id)']
+            last_message_id += 1
         # If load old messages
         response = execute_query('''
                     SELECT users.username, messages.content, messages.timestamp, messages.id FROM messages
                     JOIN users ON sender_id = users.id
-                    WHERE (sender_id = ? AND recipient_id = ?) OR (sender_id = ? AND recipient_id = ?)
-                    ORDER BY timestamp DESC
-                    LIMIT 10
-                    ''', recipient_id, session['user_id'], session['user_id'], recipient_id)
+                    WHERE ((sender_id = ? AND recipient_id = ?) OR (sender_id = ? AND recipient_id = ?))
+                           AND messages.id < ?
+                    ORDER BY messages.id DESC
+                    LIMIT 30
+                    ''', recipient_id, session['user_id'], session['user_id'], recipient_id, last_message_id)
     else:
         # If load new messages
         response = execute_query(''' 
                     SELECT users.username, messages.content, messages.timestamp, messages.id FROM messages
                     JOIN users ON sender_id = users.id
                     WHERE seen = 0 AND (sender_id = ? AND recipient_id = ?)
-                    ORDER BY timestamp DESC
+                    ORDER BY messages.id DESC
                     ''', recipient_id, session['user_id'])
         
     # Convert Row objects to dictionaries

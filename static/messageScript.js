@@ -1,5 +1,5 @@
 // Variable for last received message id
-let last_message_id = -1;
+let last_message_id = null;
 
 
 /**
@@ -61,7 +61,7 @@ function receiveMessage(old = false) {
         // Set the 'Content-Type' header to 'application/json'
         headers: { 'Content-Type': 'application/json' },
         // Set the request body to the recipient_id and old variables
-        body: JSON.stringify({recipient_id: document.getElementById('recipient_id').value, old: old, last_message_id: document.getElementById('last_message_id').value})
+        body: JSON.stringify({recipient_id: document.getElementById('recipient_id').value, old: old, last_message_id: last_message_id})
     }
     // Send a POST request to '/receive' with a placeholder message
     fetch('/receive', requestOptions)
@@ -80,17 +80,17 @@ function receiveMessage(old = false) {
         const savedScrollHeight = chat_box.scrollTop;
 
         // Add the messages to the top of the chat box
-        chat_box.innerHTML = chat_box.innerHTML + messages;
+        if (old) {
+            chat_box.innerHTML = chat_box.innerHTML + messages;
+        }
+        else {
+            chat_box.innerHTML = messages + chat_box.innerHTML;
+        }
 
         // Restore the scroll position
         chat_box.scrollTop = savedScrollHeight;
 
-        // Update the last message id
-        if (old) {
-            document.getElementById('last_message_id').value = last_message_id
-        }
-
-        // Enable tooltips
+        // Enable tooltips after new messages are loaded
         enableTooltips();
     })
 }
@@ -162,4 +162,4 @@ setTimeout(checkScrollPosition, 1000);
 
 
 // Periodically check for new messages
-setInterval(receiveMessage, 500);
+setInterval(receiveMessage, 1000);
