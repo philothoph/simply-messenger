@@ -1,3 +1,6 @@
+// Variable for last received message id
+let last_message_id = -1;
+
 
 /**
  * Function to send a message.
@@ -36,10 +39,13 @@ function sendMessage() {
             timestamp: new Date().toISOString()
         };
 
-        // Add the message to the chat box
-        document.getElementById('chat-messages').innerHTML = wrapMessage(messageObject) + document.getElementById('chat-messages').innerHTML;
+        // Add the message to the top of the chat box
+        chat_box = document.getElementById('chat-messages');
+        chat_box.innerHTML = wrapMessage(messageObject) + chatBox.innerHTML;
+        chat_box.scrollTop = 0;
     }
 }
+
 
 /**
  * Function to receive and display messages.
@@ -55,7 +61,7 @@ function receiveMessage(old = false) {
         // Set the 'Content-Type' header to 'application/json'
         headers: { 'Content-Type': 'application/json' },
         // Set the request body to the recipient_id and old variables
-        body: JSON.stringify({recipient_id: document.getElementById('recipient_id').value, old: old})
+        body: JSON.stringify({recipient_id: document.getElementById('recipient_id').value, old: old, last_message_id: document.getElementById('last_message_id').value})
     }
     // Send a POST request to '/receive' with a placeholder message
     fetch('/receive', requestOptions)
@@ -65,11 +71,27 @@ function receiveMessage(old = false) {
     .then(data => {
         let messages = ''
         for (const message of data) {
-            messages += wrapMessage(message)
+            messages += wrapMessage(message);
+            last_message_id = message.id;
         }
         
+        // Save the current scroll position
+        const chat_box = document.getElementById('chat-messages');
+        const savedScrollHeight = chat_box.scrollTop;
+
         // Add the messages to the top of the chat box
-        document.getElementById('chat-messages').innerHTML = messages + document.getElementById('chat-messages').innerHTML;
+        chat_box.innerHTML = chat_box.innerHTML + messages;
+
+        // Restore the scroll position
+        chat_box.scrollTop = savedScrollHeight;
+
+        // Update the last message id
+        if (old) {
+            document.getElementById('last_message_id').value = last_message_id
+        }
+
+        // Enable tooltips
+        enableTooltips();
     })
 }
 
@@ -111,18 +133,33 @@ document.getElementById('new_message').addEventListener('keypress', function(eve
 });
 
 
-function updateChat() {
-    sendMessage();
-    setTimeout(receiveMessage, 500);
+function checkScrollPosition() {
+  const chatBox = document.getElementById('chat-messages');
+  const atBottom = Math.abs(chatBox.scrollTop) + chatBox.clientHeight >= chatBox.scrollHeight;
+  if (atBottom) receiveMessage(true);
+}
+  
+
+// Add an event listener to the chat box
+const chatBox = document.getElementById('chat-messages');
+chatBox.addEventListener('scroll', checkScrollPosition);
+
+
+// Enable and reenable tooltips every time new messages are loaded
+function enableTooltips() {
+    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+    const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
 }
 
 
 // Enable tooltips
-const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
-const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+enableTooltips();
+
 
 // Initially load messages
-receiveMessage(true);
+receiveMessage();
+setTimeout(checkScrollPosition, 1000);
+
 
 // Periodically check for new messages
-setInterval(receiveMessage, 5000);
+setInterval(receiveMessage, 500);
