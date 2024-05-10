@@ -71,6 +71,7 @@ def execute_query(sql_query, *query_params, one=False):
         The result of the SQL query:
         - For SELECT statements, a single row as a dictionary if one=True,
           else a list of dictionaries. If no rows, returns None.
+        - For INSERT, UPDATE or DELETE statements, the number of rows affected
         - For other statements, None.
     """
     # Get the database connection
@@ -89,8 +90,12 @@ def execute_query(sql_query, *query_params, one=False):
     if sql_query.split()[0].lower() == 'select':
         # If it's a SELECT statement, get the result
         result = cursor.fetchone() if one else cursor.fetchall()
+        if not result:
+            result = None
     elif sql_query.split()[0].lower() in ('insert', 'update', 'delete'):
         # If it's an INSERT, UPDATE or DELETE statement, commit changes
         db.commit()
+        # Get the number of rows affected
+        result = cursor.rowcount
 
     return result
