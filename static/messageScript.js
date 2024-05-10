@@ -43,6 +43,11 @@ function sendMessage() {
         chat_box = document.getElementById('chat-messages');
         chat_box.innerHTML = wrapMessage(messageObject) + chatBox.innerHTML;
         chat_box.scrollTop = 0;
+
+        // Update last message id
+        if (last_message_id == null) {
+            last_message_id = 0;
+        }
     }
 }
 
@@ -72,7 +77,9 @@ function receiveMessage(old = false) {
         let messages = ''
         for (const message of data) {
             messages += wrapMessage(message);
-            last_message_id = message.id;
+            if (old) {
+                last_message_id = message.id;
+            }
         }
         
         // Save the current scroll position
@@ -146,8 +153,7 @@ chatBox.addEventListener('scroll', checkScrollPosition);
 
 
 // Initially load messages
-receiveMessage();
-setTimeout(checkScrollPosition, 1000);
+receiveMessage(true);
 
 
 // Periodically check for new messages

@@ -35,10 +35,10 @@ def index():
                                 ''', session['user_id'])   
 
     # Convert Row objects to list of dictionaries
-    contacts = [dict(row) for row in contacts]                                 
+    contacts = [dict(row) for row in contacts] if contacts else []                        
     
     # Convert Row objects to list of dictionaries
-    new_messages = [dict(row) for row in new_messages]
+    new_messages = [dict(row) for row in new_messages] if new_messages else []
     
     # Add new_messages to dict_contacts
     for contact in contacts:
@@ -161,12 +161,12 @@ def receive():
     if old:
         # Get last message id
         last_message_id = request.json.get('last_message_id', None)
-        print(last_message_id)
         if last_message_id is None:
             last_message_id = execute_query('''
                                 SELECT MAX(id) FROM messages 
                                 WHERE (sender_id = ? AND recipient_id = ?) OR (sender_id = ? AND recipient_id = ?)
-                                ''', recipient_id, session['user_id'], session['user_id'], recipient_id, one=True)['MAX(id)']
+                                ''', recipient_id, session['user_id'], session['user_id'], recipient_id, one=True)
+            last_message_id = last_message_id['MAX(id)'] if last_message_id['MAX(id)'] else -1
             last_message_id += 1
         # If load old messages
         response = execute_query('''
@@ -187,7 +187,7 @@ def receive():
                     ''', recipient_id, session['user_id'])
         
     # Convert Row objects to dictionaries
-    response = [dict(row) for row in response]
+    response = [dict(row) for row in response] if response else []
 
     # Get id of first and last message
     if response:
