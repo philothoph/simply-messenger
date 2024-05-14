@@ -116,14 +116,14 @@ function wrapMessage(message) {
     if (message.username == document.getElementById('username').value) {
         return `<div class="d-flex">
                     <div class="card mb-2 me-5" style="background-color: #ced4da; width: fit-content" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="${timestamp}">
-                        <div class="card-body">${message.content}</div>
+                        <div class="card-body text-start">${message.content}</div>
                     </div>
                 </div>`;
     }
     else {
         return `<div class="d-flex justify-content-end">
                     <div class="card mb-2 ms-5" style="background-color: #e9ecef; width: fit-content" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="${timestamp}">
-                        <div class="card-body">${message.content}</div>
+                        <div class="card-body text-start">${message.content}</div>
                     </div>
                 </div>`;
     }
