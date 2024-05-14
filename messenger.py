@@ -20,11 +20,21 @@ def index():
 
     # Get list of contacts with whom logged-in user has exchanged messages 
     contacts = execute_query('''
-                             SELECT username FROM users WHERE id IN 
-                             (SELECT sender_id FROM messages WHERE recipient_id = ?
-                             UNION
-                             SELECT recipient_id FROM messages WHERE sender_id = ?)
-                             ''', session['user_id'], session['user_id'])
+                            SELECT DISTINCT users.username
+                            FROM users
+                            INNER JOIN (
+                                SELECT DISTINCT
+                                    CASE
+                                        WHEN sender_id = ? THEN recipient_id
+                                        ELSE sender_id
+                                    END AS user_id,
+                                    MAX(id) AS last_message_id
+                                FROM messages
+                                WHERE sender_id = ? OR recipient_id = ?
+                                GROUP BY user_id
+                            ) AS last_messages ON users.id = last_messages.user_id
+                            ORDER BY last_messages.last_message_id DESC
+                            ''', session['user_id'], session['user_id'], session['user_id'])
     
     # Count the number of new messages for each contact
     new_messages = execute_query('''
@@ -35,10 +45,10 @@ def index():
                                 ''', session['user_id'])   
 
     # Convert Row objects to list of dictionaries
-    contacts = [dict(row) for row in contacts]                                 
+    contacts = [dict(row) for row in contacts] if contacts else []                        
     
     # Convert Row objects to list of dictionaries
-    new_messages = [dict(row) for row in new_messages]
+    new_messages = [dict(row) for row in new_messages] if new_messages else []
     
     # Add new_messages to dict_contacts
     for contact in contacts:
@@ -67,7 +77,8 @@ def chat():
         recipient_id = recipient_id['id']
     else:
         # If a user is not found, redirect to index and return error message
-        flash('User ' + name + ' not found')
+        if name:
+            flash('User ' + name + ' is not found')
         return redirect('/')
     
     return render_template('chat.html', name=name, recipient_id=recipient_id)
@@ -114,7 +125,7 @@ def register():
         if not username:
             return render_template('register.html', error='Please enter a username')
         if execute_query('SELECT id FROM users WHERE username = ?', username, one=True):
-            return render_template('register.html', error='Username already exists')
+            return render_template('register.html', error='User already exists')
         # Regular expression to check if the username starts with a letter and only contains letters and numbers
         if not match(r'^[A-Za-z][A-Za-z0-9]*$', username):
             return render_template('register.html', 
@@ -154,28 +165,51 @@ def receive():
 
     recipient_id = request.json['recipient_id']
 
-    # Process the message and generate a response
-    response = execute_query(''' 
+    # Check which messages to load
+    old = request.json.get('old', False)
+
+    if old:
+        # Get last message id
+        last_message_id = request.json.get('last_message_id', None)
+        if last_message_id is None:
+            last_message_id = execute_query('''
+                                SELECT MAX(id) FROM messages 
+                                WHERE (sender_id = ? AND recipient_id = ?) OR (sender_id = ? AND recipient_id = ?)
+                                ''', recipient_id, session['user_id'], session['user_id'], recipient_id, one=True)
+            last_message_id = last_message_id['MAX(id)'] if last_message_id['MAX(id)'] else -1
+            last_message_id += 1
+        # If load old messages
+        response = execute_query('''
                     SELECT users.username, messages.content, messages.timestamp, messages.id FROM messages
                     JOIN users ON sender_id = users.id
-                    WHERE (sender_id = ? AND recipient_id = ?) OR (sender_id = ? AND recipient_id = ?) 
-                    ORDER BY timestamp ASC
-                    ''', session['user_id'], recipient_id, recipient_id, session['user_id'])
-    
+                    WHERE ((sender_id = ? AND recipient_id = ?) OR (sender_id = ? AND recipient_id = ?))
+                           AND messages.id < ?
+                    ORDER BY messages.id DESC
+                    LIMIT 30
+                    ''', recipient_id, session['user_id'], session['user_id'], recipient_id, last_message_id)
+    else:
+        # If load new messages
+        response = execute_query(''' 
+                    SELECT users.username, messages.content, messages.timestamp, messages.id FROM messages
+                    JOIN users ON sender_id = users.id
+                    WHERE seen = 0 AND (sender_id = ? AND recipient_id = ?)
+                    ORDER BY messages.id DESC
+                    ''', recipient_id, session['user_id'])
+        
     # Convert Row objects to dictionaries
-    response = [dict(row) for row in response]
+    response = [dict(row) for row in response] if response else []
 
     # Get id of first and last message
     if response:
-        first_id = response[0]['id']
-        last_id = response[-1]['id']
+        first_id = response[-1]['id']
+        last_id = response[0]['id']
     else:
         first_id = -1
         last_id = -1
 
     # Update seen status of messages in database
-    execute_query('UPDATE messages SET seen = 1 WHERE (id >= ? AND id <= ?) AND recipient_id = ?',
-                   first_id, last_id, session['user_id'])
+    execute_query('UPDATE messages SET seen = 1 WHERE (id >= ? AND id <= ?) AND recipient_id = ? AND seen = 0',
+                first_id, last_id, session['user_id'])
 
     # Return a JSON response with the generated response
     return response

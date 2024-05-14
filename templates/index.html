@@ -5,18 +5,28 @@
 {% endblock %}
 
 {% block main %}
-    <div>
-        <ul>
-            {% for contact in contacts %}
-                <li><a href="/chat?name={{ contact.username }}">{{ contact.username }} {{contact.new_messages if contact.new_messages else ''}}</a></li>
-            {% endfor %}
-        </ul>
-    </div>
-    <div>
+    <script src="{{ url_for('static', filename='tooltip.js') }}"></script>
+
+    <div class="container mt-5" style="width: 80%;">
+    <div class="mt-5">
         <form action="/chat">
-            <input name="name" type="text" required>
-            <input type="submit" value="Chat">
+            <div class="input-group mx-auto bg-light">
+                <input name="name" class="form-control shadow-none" type="text" placeholder="Username" required autocomplete="off">
+                <input type="submit" class="btn btn-outline-secondary" value="Search">
+            </div>
         </form>
         <div id="error">{% for message in get_flashed_messages() %}{{ message }}{% endfor %}</div>
     </div>
+    <div class="card mt-2">
+        <ul class="list-group list-group-flush"> 
+                {% for contact in contacts %}
+                    <li class="list-group-item hover" onclick="window.location.href='/chat?name={{ contact.username }}'" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="{{ contact.new_messages if contact.new_messages else 'No' }} new messages">
+                        {{ contact.username }}
+                    </li>
+                {% endfor %}
+        </ul>
+    </div>
+    </div>
+
+    <script>enableTooltips();</script>
 {% endblock %}

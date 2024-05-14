@@ -1,0 +1,8 @@
+DONE Order list of contacts with most recent at the top
+DONE Make amount of new messages appear in tooltip
+Check password at the registration
+Add availability to change password
+Make correct time and date of messages according to local timezone
+Jump to start of new messages when open chat
+Do not double messages when write to yourself
+Highlight contact with new messages
