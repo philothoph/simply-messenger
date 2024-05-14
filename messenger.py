@@ -20,11 +20,21 @@ def index():
 
     # Get list of contacts with whom logged-in user has exchanged messages 
     contacts = execute_query('''
-                             SELECT username FROM users WHERE id IN 
-                             (SELECT sender_id FROM messages WHERE recipient_id = ?
-                             UNION
-                             SELECT recipient_id FROM messages WHERE sender_id = ?)
-                             ''', session['user_id'], session['user_id'])
+                            SELECT DISTINCT users.username
+                            FROM users
+                            INNER JOIN (
+                                SELECT DISTINCT
+                                    CASE
+                                        WHEN sender_id = ? THEN recipient_id
+                                        ELSE sender_id
+                                    END AS user_id,
+                                    MAX(id) AS last_message_id
+                                FROM messages
+                                WHERE sender_id = ? OR recipient_id = ?
+                                GROUP BY user_id
+                            ) AS last_messages ON users.id = last_messages.user_id
+                            ORDER BY last_messages.last_message_id DESC
+                            ''', session['user_id'], session['user_id'], session['user_id'])
     
     # Count the number of new messages for each contact
     new_messages = execute_query('''
@@ -68,7 +78,7 @@ def chat():
     else:
         # If a user is not found, redirect to index and return error message
         if name:
-            flash('User ' + name + ' not found')
+            flash('User ' + name + ' is not found')
         return redirect('/')
     
     return render_template('chat.html', name=name, recipient_id=recipient_id)

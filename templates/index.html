@@ -5,23 +5,28 @@
 {% endblock %}
 
 {% block main %}
+    <script src="{{ url_for('static', filename='tooltip.js') }}"></script>
+
+    <div class="container mt-5" style="width: 80%;">
     <div class="mt-5">
         <form action="/chat">
-            <input name="name" type="text" required>
-            <input type="submit" value="Search">
+            <div class="input-group mx-auto bg-light">
+                <input name="name" class="form-control shadow-none" type="text" placeholder="Username" required autocomplete="off">
+                <input type="submit" class="btn btn-outline-secondary" value="Search">
+            </div>
         </form>
         <div id="error">{% for message in get_flashed_messages() %}{{ message }}{% endfor %}</div>
     </div>
     <div class="card mt-2">
-        <table class="table table-hover table-borderless card-body">
-            <tbody>
+        <ul class="list-group list-group-flush"> 
                 {% for contact in contacts %}
-                    <tr onclick="window.location.href='/chat?name={{ contact.username }}'">
-                        <td class="col-1">{{ contact.new_messages if contact.new_messages else '' }}</td>
-                        <td>{{ contact.username }}</a></td>
-                    </tr>
+                    <li class="list-group-item hover" onclick="window.location.href='/chat?name={{ contact.username }}'" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="{{ contact.new_messages if contact.new_messages else 'No' }} new messages">
+                        {{ contact.username }}
+                    </li>
                 {% endfor %}
-            </tbody>
-          </table>
+        </ul>
     </div>
+    </div>
+
+    <script>enableTooltips();</script>
 {% endblock %}
