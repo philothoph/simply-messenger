@@ -5,18 +5,23 @@
 {% endblock %}
 
 {% block main %}
-    <div>
-        <ul>
-            {% for contact in contacts %}
-                <li><a href="/chat?name={{ contact.username }}">{{ contact.username }} {{contact.new_messages if contact.new_messages else ''}}</a></li>
-            {% endfor %}
-        </ul>
-    </div>
-    <div>
+    <div class="mt-5">
         <form action="/chat">
             <input name="name" type="text" required>
-            <input type="submit" value="Chat">
+            <input type="submit" value="Search">
         </form>
         <div id="error">{% for message in get_flashed_messages() %}{{ message }}{% endfor %}</div>
+    </div>
+    <div class="card mt-2">
+        <table class="table table-hover table-borderless card-body">
+            <tbody>
+                {% for contact in contacts %}
+                    <tr onclick="window.location.href='/chat?name={{ contact.username }}'">
+                        <td class="col-1">{{ contact.new_messages if contact.new_messages else '' }}</td>
+                        <td>{{ contact.username }}</a></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+          </table>
     </div>
 {% endblock %}
