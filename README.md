@@ -1,6 +1,6 @@
 # Simply Messenger
 
-Simply Messenger is a simple, web-based messaging application built with the Python Flask framework. It offers a clean interface for users to send and receive messages in real time.
+Simply Messenger is a simple, web-based messaging application built with the Python Flask framework. It offers a clean interface for users to send and receive messages in real time. You can try it out here: [https://simplymessenger.ru](https://simplymessenger.ru)
 
 ## Features
 
@@ -14,13 +14,13 @@ Simply Messenger is a simple, web-based messaging application built with the Pyt
 To set up Simply Messenger on your local machine, follow these steps:
 
 1. Clone the repository:
-    > git clone https://github.com/philothoph/simply-messenger.git
+    `git clone https://github.com/philothoph/simply-messenger.git`
 2. Navigate into the project directory:
-    > cd simply-messenger
+    `cd simply-messenger`
 3. Install required dependencies:
-    > pip install -r requirements.txt
+    `pip install -r requirements.txt`
 4. Run the Flask application:
-    > flask run
+    `flask run`
 
 ## Usage
 
