@@ -1,6 +1,6 @@
 # Simply Messenger
 
-Simply Messenger is a simple, web-based messaging application built with the Python Flask framework. It offers a clean interface for users to send and receive messages in real time. You can try it out here: [https://simplymessenger.ru](https://simplymessenger.ru)
+Simply Messenger is a simple, web-based messaging application built with the Python Flask framework. It offers a clean interface for users to send and receive messages in real time.
 
 ## Features
 
